@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Task Board</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    
+    <header class="app-header">
+      <div class="brand">
+        <h1>Kanban Board</h1>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Tapşırıq axtar..." autocomplete="off">
+        
+        <select id="priorityFilter">
+          <option value="all">Bütün Prioritetlər</option>
+          <option value="low">Aşağı</option>
+          <option value="medium">Orta</option>
+          <option value="high">Yüksək</option>
+        </select>
+
+        <button id="openModalBtn" class="btn-add">+ Yeni Tapşırıq</button>
+      </div>
+    </header>
+
+    <main class="board-grid">
+      
+      <div class="column" data-status="todo">
+        <div class="column-title">
+          <div class="title-left">
+            <span class="badge badge-todo"></span>
+            <h2>Gözləmədə</h2>
+          </div>
+          <span class="count-pill" id="count-todo">0</span>
+        </div>
+        <div class="card-list" id="todo-list">
+          <div class="empty-msg">Tapşırıq yoxdur</div>
+        </div>
+      </div>
+
+      <div class="column" data-status="in-progress">
+        <div class="column-title">
+          <div class="title-left">
+            <span class="badge badge-progress"></span>
+            <h2>İcra olunur</h2>
+          </div>
+          <span class="count-pill" id="count-in-progress">0</span>
+        </div>
+        <div class="card-list" id="in-progress-list">
+          <div class="empty-msg">Tapşırıq yoxdur</div>
+        </div>
+      </div>
+
+      <div class="column" data-status="done">
+        <div class="column-title">
+          <div class="title-left">
+            <span class="badge badge-done"></span>
+            <h2>Tamamlandı</h2>
+          </div>
+          <span class="count-pill" id="count-done">0</span>
+        </div>
+        <div class="card-list" id="done-list">
+          <div class="empty-msg">Tapşırıq yoxdur</div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
