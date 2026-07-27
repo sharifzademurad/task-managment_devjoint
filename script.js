@@ -6,7 +6,6 @@ let tasks = [
     status: "todo",         
     priority: "high"       
   },
-  
   {
     id: "2",
     title: "Dinamik render funksiyası",
@@ -56,6 +55,16 @@ function renderTasks() {
   tasks.forEach((task) => {
     const card = document.createElement("div");
     card.classList.add("task-card");
+    card.setAttribute("draggable", "true");
+
+    card.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", task.id);
+      card.classList.add("dragging");
+    });
+
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+    });
 
     const badge = document.createElement("span");
     badge.classList.add("priority-badge", task.priority);
@@ -109,6 +118,32 @@ function renderTasks() {
   if (doneCount === 0) doneList.innerHTML = '<div class="empty-msg">Tapşırıq yoxdur</div>';
 }
 
+const columns = document.querySelectorAll(".column");
+
+columns.forEach((column) => {
+  column.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    column.classList.add("drag-over");
+  });
+
+  column.addEventListener("dragleave", () => {
+    column.classList.remove("drag-over");
+  });
+
+  column.addEventListener("drop", (e) => {
+    e.preventDefault();
+    column.classList.remove("drag-over");
+
+    const taskId = e.dataTransfer.getData("text/plain");
+    const newStatus = column.getAttribute("data-status");
+
+    tasks = tasks.map((t) =>
+      t.id === taskId ? { ...t, status: newStatus } : t
+    );
+
+    renderTasks();
+  });
+});
 
 openModalBtn.addEventListener("click", () => {
   taskForm.reset();
