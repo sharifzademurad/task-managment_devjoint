@@ -1,4 +1,4 @@
-let tasks = [
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [
   {
     id: "1",
     title: "Layihə strukturunu qurmaq",
@@ -21,6 +21,10 @@ let tasks = [
     priority: "low"
   }
 ];
+
+function saveTasksToLocalStorage() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 const todoList = document.getElementById("todo-list");
 const inProgressList = document.getElementById("in-progress-list");
@@ -141,6 +145,7 @@ columns.forEach((column) => {
       t.id === taskId ? { ...t, status: newStatus } : t
     );
 
+    saveTasksToLocalStorage(); 
     renderTasks();
   });
 });
@@ -184,6 +189,7 @@ taskForm.addEventListener("submit", (e) => {
     tasks.push(newTask);
   }
 
+  saveTasksToLocalStorage(); 
   closeModal();
   renderTasks();
 });
@@ -204,6 +210,7 @@ function openEditModal(id) {
 
 function deleteTask(id) {
   tasks = tasks.filter((t) => t.id !== id);
+  saveTasksToLocalStorage();
   renderTasks();
 }
 
