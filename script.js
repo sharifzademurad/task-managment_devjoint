@@ -26,6 +26,17 @@ function saveTasksToLocalStorage() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
+// XSS qorunması üçün köməkçi Sanitization funksiyası
+function escapeHTML(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const todoList = document.getElementById("todo-list");
 const inProgressList = document.getElementById("in-progress-list");
 const doneList = document.getElementById("done-list");
@@ -47,7 +58,6 @@ const taskStatusInput = document.getElementById("taskStatusInput");
 const taskPriorityInput = document.getElementById("taskPriorityInput");
 const modalTitle = document.getElementById("modalTitle");
 
-// --- Axtarış və Filtr Elementləri ---
 const searchInput = document.getElementById("searchInput");
 const priorityFilter = document.getElementById("priorityFilter");
 
@@ -60,11 +70,9 @@ function renderTasks() {
   let inProgressCount = 0;
   let doneCount = 0;
 
-  // Input dəyərlərini alırıq
   const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
   const selectedPriority = priorityFilter ? priorityFilter.value : "all";
 
-  // Tapşırıqları axtarış mətni və prioritetə görə süzgəcdən keçiririk
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm) ||
@@ -94,6 +102,7 @@ function renderTasks() {
     badge.classList.add("priority-badge", task.priority);
     badge.textContent = task.priority;
 
+    // textContent istifadə edərək XSS-in qarşısı alınır
     const title = document.createElement("h3");
     title.textContent = task.title;
 
@@ -142,7 +151,6 @@ function renderTasks() {
   if (doneCount === 0) doneList.innerHTML = '<div class="empty-msg">Tapşırıq yoxdur</div>';
 }
 
-// --- Axtarış və Filtr Event Listener-ləri ---
 if (searchInput) {
   searchInput.addEventListener("input", renderTasks);
 }
@@ -191,6 +199,7 @@ function closeModal() {
 closeModalBtn.addEventListener("click", closeModal);
 cancelBtn.addEventListener("click", closeModal);
 
+// FORM SUBMIT — Təkrarlanan tapşırığın qarşısını almaq və təhlükəsiz saxlanılma
 taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -201,6 +210,16 @@ taskForm.addEventListener("submit", (e) => {
   const priority = taskPriorityInput.value;
 
   if (!title) return;
+
+  // Təkrarlanan başlığın yoxlanılması (Duplication check)
+  const isDuplicate = tasks.some(
+    (t) => t.title.toLowerCase() === title.toLowerCase() && t.id !== id
+  );
+
+  if (isDuplicate) {
+    alert("Bu başlıqda tapşırıq artıq mövcuddur! Xahiş olunur fərqli başlıq daxil edin.");
+    return;
+  }
 
   if (id) {
     tasks = tasks.map((t) =>
