@@ -47,6 +47,10 @@ const taskStatusInput = document.getElementById("taskStatusInput");
 const taskPriorityInput = document.getElementById("taskPriorityInput");
 const modalTitle = document.getElementById("modalTitle");
 
+// --- Axtarış və Filtr Elementləri ---
+const searchInput = document.getElementById("searchInput");
+const priorityFilter = document.getElementById("priorityFilter");
+
 function renderTasks() {
   todoList.innerHTML = "";
   inProgressList.innerHTML = "";
@@ -56,7 +60,23 @@ function renderTasks() {
   let inProgressCount = 0;
   let doneCount = 0;
 
-  tasks.forEach((task) => {
+  // Input dəyərlərini alırıq
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  const selectedPriority = priorityFilter ? priorityFilter.value : "all";
+
+  // Tapşırıqları axtarış mətni və prioritetə görə süzgəcdən keçiririk
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchTerm) ||
+      task.description.toLowerCase().includes(searchTerm);
+
+    const matchesPriority =
+      selectedPriority === "all" || task.priority === selectedPriority;
+
+    return matchesSearch && matchesPriority;
+  });
+
+  filteredTasks.forEach((task) => {
     const card = document.createElement("div");
     card.classList.add("task-card");
     card.setAttribute("draggable", "true");
@@ -120,6 +140,14 @@ function renderTasks() {
   if (todoCount === 0) todoList.innerHTML = '<div class="empty-msg">Tapşırıq yoxdur</div>';
   if (inProgressCount === 0) inProgressList.innerHTML = '<div class="empty-msg">Tapşırıq yoxdur</div>';
   if (doneCount === 0) doneList.innerHTML = '<div class="empty-msg">Tapşırıq yoxdur</div>';
+}
+
+// --- Axtarış və Filtr Event Listener-ləri ---
+if (searchInput) {
+  searchInput.addEventListener("input", renderTasks);
+}
+if (priorityFilter) {
+  priorityFilter.addEventListener("change", renderTasks);
 }
 
 const columns = document.querySelectorAll(".column");
